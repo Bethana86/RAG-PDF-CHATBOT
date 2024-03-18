@@ -47,12 +47,12 @@ def initialize_session_state():
     if 'usage_counter' not in st.session_state:
         st.session_state.usage_counter = 0
 
-    # Check if client api key is enabled
-    if 'openai_api_key_client' not in st.session_state:
-        if st.session_state.config['enable_client_api_key']:
-            st.session_state.openai_api_key_client = st.secrets['openai_api_key']
+    # Check if host api key is enabled
+    if 'openai_api_key_host' not in st.session_state:
+        if st.session_state.config['enable_host_api_key']:
+            st.session_state.openai_api_key_host = st.secrets['openai_api_key']
         else:
-            st.session_state.openai_api_key_client = 'NA'
+            st.session_state.openai_api_key_host = 'NA'
         
 @st.cache_resource
 def get_resources():
@@ -76,23 +76,23 @@ def main():
 
     #------------------------------------ SIDEBAR ----------------------------------------#
     with st.sidebar:
-        # API option, whether to use client's API key (must be enabled by config), and also to cap usage
+        # API option, whether to use host's API key (must be enabled by config), and also to cap usage
         if st.session_state.usage_counter >= 5:
             api_option = st.radio(
                 'API key usage', 
-                ['client API key usage cap reached!'], 
+                ['host API key usage cap reached!'], 
                 help='Only a maximum of 5 artefacts are allowed, further uploading has been disabled')
         else:
             api_option = st.radio(
                 'API key usage', 
-                ['Use my own API key', 'Use client API key (capped)'], 
+                ['Use my own API key', 'Use host API key (capped)'], 
                 help='Cap is counted by number of documents uploaded (max 5 in total)'
                 )
         # Response to API option
         if (api_option == 'Use my own API key'):
             openai_api_key =st.text_input("Enter your API key")
         else:
-            openai_api_key = st.session_state.openai_api_key_client
+            openai_api_key = st.session_state.openai_api_key_host
         
         # Document uploader
         uploaded_files = st.file_uploader(
@@ -104,7 +104,7 @@ def main():
         st.write('And / Or')
         weblinks = st.text_area(label = 'Retrieve from website or youtube video transcript (Enter every link on a new line)').split('\n')
 
-        if api_option != 'client API key usage cap reached!':
+        if api_option != 'host API key usage cap reached!':
             if st.button('Upload', type='primary') and (uploaded_files or weblinks):
                 with st.status('Uploading... (this may take a while)', expanded=True) as status:
                     try:
@@ -119,7 +119,7 @@ def main():
                         status.update(label='Error occured.', state='error', expanded=False)
                     else:
                         # If successful, increment the usage based on number of documents
-                        if openai_api_key == st.session_state.openai_api_key_client:
+                        if openai_api_key == st.session_state.openai_api_key_host:
                             st.session_state.usage_counter += len(loader.document_names)
                             logger.info(f'Current usage counter: {st.session_state.usage_counter}')
                         logger.info(f'Uploaded: {loader.document_names}')
@@ -164,7 +164,7 @@ def main():
         # Display error if no API key given
         if not openai_api_key.startswith('sk-'):
             if openai_api_key == 'NA':
-                st.warning('client key currently not available, please use your own OpenAI API key!', icon='⚠')
+                st.warning('host key currently not available, please use your own OpenAI API key!', icon='⚠')
             else:
                 st.warning('Please enter your OpenAI API key!', icon='⚠')
 
