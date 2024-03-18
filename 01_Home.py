@@ -77,11 +77,11 @@ def main():
     #------------------------------------ SIDEBAR ----------------------------------------#
     with st.sidebar:
         # API option, whether to use host's API key (must be enabled by config), and also to cap usage
-        if st.session_state.usage_counter >= 5:
+        if st.session_state.usage_counter >= 10:
             api_option = st.radio(
                 'API key usage', 
                 ['host API key usage cap reached!'], 
-                help='Only a maximum of 5 artefacts are allowed, further uploading has been disabled')
+                help='Only a maximum of 10 artefacts are allowed, further uploading has been disabled')
         else:
             api_option = st.radio(
                 'API key usage', 
