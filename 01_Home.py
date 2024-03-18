@@ -126,7 +126,7 @@ def main():
                         status.update(label='Embedding complete!', state='complete', expanded=False)
 
     #------------------------------------- MAIN PAGE -----------------------------------------#
-    st.markdown("## :rocket: Welcome to Sien Long's RAG Bot")
+    st.markdown("## :rocket: Welcome to BETH'S RAG Bot")
 
     # Info bar
     if vector_db.document_names:
